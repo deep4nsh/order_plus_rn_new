@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "216126386602",
+    "project_id": "order-plus-124",
+    "storage_bucket": "order-plus-124.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:216126386602:android:9ec0c031dea5a46210bbd3",
+        "android_client_info": {
+          "package_name": "com.orderplus"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "216126386602-psk95qklp7ugrdlmrk6pe9ee3r4dto4a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.orderplus",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "216126386602-i286c0imsnb9vg29sdptbv28obbvs808.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAF9YylQtKNUaAdHQK678gjsE2LukQqsY4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "216126386602-i286c0imsnb9vg29sdptbv28obbvs808.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "216126386602-08s81p1r8erb4s1envfl7a2q4uf4ev4d.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.orderplus"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
