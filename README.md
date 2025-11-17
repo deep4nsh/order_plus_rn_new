@@ -1,46 +1,79 @@
 # Order Plus (React Native)
 
-Order Plus is a React Native food ordering app inspired by modern delivery platforms. It includes onboarding, city selection, Google sign‑in with Firebase, a Firestore-driven menu, cart and checkout flows with rich item customization, order history and tracking, and basic profile/location management.
+Order Plus is a **food ordering app** built with React Native, inspired by modern delivery platforms (Swiggy / Zomato–style UX).
 
-This project was bootstrapped with `@react-native-community/cli` and targets both Android and iOS.
+It showcases:
+
+- Multi-screen navigation with onboarding and auth
+- Google sign-in powered by Firebase Auth
+- A Firestore-driven, real-time menu
+- A fully managed cart with rich item customization
+- Order summary, history, and tracking
+- Basic profile and location handling (maps + geolocation)
+
+This project is ideal as a **portfolio piece** to demonstrate mobile app architecture, third-party integrations, and production-style flows.
+
+---
+
+## Highlights (Why this project is interesting)
+
+- **Real-world auth flow** using Google + Firebase Auth
+- **Realtime data** from Firestore `menu` collection
+- **Stateful cart** with customizations affecting pricing
+- **Multi-stack navigation** depending on onboarding/auth state
+- **Location features** with maps & geolocation
+- **Payment integration ready** via Razorpay (with native setup)
 
 ---
 
 ## Features
 
 - **Onboarding & splash flow**
-  - Splash screen followed by an onboarding experience.
-  - Onboarding completion state is persisted in `AsyncStorage` (`hasOnboarded`).
+  - Branded splash screen followed by an onboarding experience.
+  - Onboarding completion state stored in `AsyncStorage` (`hasOnboarded`).
+
 - **City selection & persistence**
-  - Dedicated city selection screen used during onboarding and later via profile.
-  - Selected city is stored and restored from `AsyncStorage` (`selectedCity`).
-- **Google sign‑in with Firebase Auth**
+  - City selection during onboarding and later via profile.
+  - Selected city stored as `selectedCity` in `AsyncStorage`.
+
+- **Google sign-in with Firebase Auth**
   - Google login via `@react-native-google-signin/google-signin` and `@react-native-firebase/auth`.
-  - User profile (name, email, avatar) stored/updated in Firestore under `users/{uid}`.
+  - User profile (name, email, avatar) written/updated in Firestore under `users/{uid}`.
+
 - **Firestore-backed menu**
   - Menu items loaded in real time from Firestore `menu` collection.
-  - Live updates via Firestore snapshot listener.
+  - Live updates via `onSnapshot`, so menu changes appear instantly in the app.
+
 - **Cart & item customization**
-  - Central cart context (`CartContext`) with add, remove, adjust quantity, clear cart, and totals.
-  - Customization flows for:
-    - **Pizzas**: crust (classic/thin/cheese burst) and cheese level with price deltas.
+  - Global cart via `CartContext`:
+    - Add, remove, adjust quantity, clear cart.
+    - Derived `totalPrice` and `totalItems`.
+  - Item customization examples:
+    - **Pizzas**: crust (classic/thin/cheese burst) and cheese level (regular/extra) with price deltas.
     - **Burgers**: optional extra patty.
     - **Fries**: regular vs large.
     - **Beverages**: regular vs large.
+  - Each customized combination is treated as a unique cart line item.
+
 - **Ordering flow**
-  - Menu → Cart → Order Summary → Orders list → Order tracking.
-  - Order tracking screen for following a placed order.
+  - Typical flow: **Menu → Cart → Order Summary → Orders → Order Tracking**.
+  - Order tracking screen to follow placed orders.
+
 - **Profile & location**
-  - Profile screen with user info.
-  - Location picker screen using maps/geolocation for address selection.
+  - Profile screen showing user info and access to orders.
+  - Location picker screen using maps + geolocation for selecting an address.
+
 - **Navigation & layout**
   - Navigation powered by `@react-navigation/native` and `@react-navigation/native-stack`.
-  - `SafeAreaProvider` and themed UI via `src/theme.js`.
+  - `SafeAreaProvider` for notch-safe layout.
+  - Shared color system via `src/theme.js`.
+
 - **Payments (Razorpay)**
-  - `react-native-razorpay` included for payment integration (requires native keys/config on your side).
+  - `react-native-razorpay` is included and ready to be wired into the checkout flow (requires Razorpay keys and native setup).
+
 - **Testing & tooling**
   - Jest test setup with `__tests__/App.test.tsx`.
-  - ESLint and Prettier configuration.
+  - ESLint and Prettier configs for consistent code quality.
 
 ---
 
@@ -49,32 +82,84 @@ This project was bootstrapped with `@react-native-community/cli` and targets bot
 - **Core**
   - React Native `0.82.1`
   - React `19.1.1`
-  - JavaScript + TypeScript (e.g. `App.tsx`)
+  - JavaScript + TypeScript (`App.tsx` is TypeScript, most screens are JS)
+
 - **Navigation**
   - `@react-navigation/native`
   - `@react-navigation/native-stack`
+
 - **State & context**
-  - Custom `CartContext` for cart state
+  - Custom `CartContext` using React Context and hooks
+
 - **Backend & auth**
   - `@react-native-firebase/app`
   - `@react-native-firebase/auth`
   - `@react-native-firebase/firestore`
+
 - **Auth provider**
   - `@react-native-google-signin/google-signin`
+
 - **Location & maps**
   - `@react-native-community/geolocation`
   - `react-native-maps`
+
 - **Payments**
   - `react-native-razorpay`
+
 - **UI helpers**
   - `react-native-safe-area-context`
   - `react-native-screens`
+
 - **Tooling**
   - Jest
   - ESLint (`@react-native/eslint-config`)
   - Prettier
 
-Node.js engine requirement: **Node >= 20** (see `package.json`).
+> Node.js engine requirement: **Node >= 20** (see `package.json`).
+
+---
+
+## Screenshots & Demo
+
+You can add screenshots here to make this project portfolio-ready:
+
+```text
+docs/
+└── screenshots/
+    ├── splash.png
+    ├── onboarding.png
+    ├── city-select.png
+    ├── auth.png
+    ├── restaurant-list.png
+    ├── menu.png
+    ├── cart.png
+    ├── order-summary.png
+    ├── orders.png
+    └── order-tracking.png
+```
+
+Example Markdown (replace with your real paths):
+
+```markdown
+## Screenshots
+
+| Splash | Onboarding | City Select |
+|--------|------------|------------|
+| ![](docs/screenshots/splash.png) | ![](docs/screenshots/onboarding.png) | ![](docs/screenshots/city-select.png) |
+
+| Auth | Menu | Cart |
+|------|------|------|
+| ![](docs/screenshots/auth.png) | ![](docs/screenshots/menu.png) | ![](docs/screenshots/cart.png) |
+```
+
+Optionally add a demo link:
+
+```markdown
+## Demo
+
+- **APK / Build**: [Download here](<your-apk-or-build-link>)
+- **Video walkthrough**: [Watch on YouTube](<your-youtube-link>)
+```
 
 ---
 
@@ -90,11 +175,9 @@ Make sure your React Native environment is set up:
 - Xcode + Command Line Tools (for iOS, macOS only)
 - `npm` or `yarn`
 
-Follow the official guide if needed: <https://reactnative.dev/docs/set-up-your-environment>
+Official environment setup guide: <https://reactnative.dev/docs/set-up-your-environment>
 
 ### 2. Clone and install
-
-From your terminal:
 
 ```sh
 # clone the repo
@@ -107,40 +190,50 @@ npm install
 yarn
 ```
 
-### 3. Configure Firebase & Google Sign‑In
+### 3. Configure Firebase & Google Sign-in
 
-This project uses Firebase Auth + Firestore and Google Sign‑In.
+This project uses Firebase Auth + Firestore and Google Sign-In.
 
 1. **Create a Firebase project** and enable:
    - Authentication → Google provider
    - Firestore Database
-2. **Add Android & iOS apps** in Firebase console and download:
+2. **Add Android & iOS apps** in the Firebase console and download:
    - `google-services.json` for Android
    - `GoogleService-Info.plist` for iOS
 3. Place them in the appropriate native locations (standard React Native Firebase setup).
-4. In `App.tsx`, the Google Sign‑In is configured with a `webClientId` inside `GoogleSignin.configure(...)`.
-   - Replace the existing client ID with your own Web client ID from the Firebase console.
+4. In `App.tsx`, Google Sign-In is configured as:
 
-For detailed platform configuration, see:
+   ```ts
+   GoogleSignin.configure({
+     webClientId: '<your-web-client-id>',
+   });
+   ```
 
-- React Native Firebase docs: <https://rnfirebase.io/>
-- Google Sign‑In docs: <https://github.com/react-native-google-signin/google-signin>
+   Replace the existing `webClientId` with your **Web client ID** from Firebase → Project Settings → OAuth client IDs.
+
+Useful docs:
+
+- React Native Firebase: <https://rnfirebase.io/>
+- Google Sign-In: <https://github.com/react-native-google-signin/google-signin>
 
 ### 4. Configure Razorpay (optional but recommended)
 
-The dependency `react-native-razorpay` is included. To fully enable payments:
+The dependency `react-native-razorpay` is already added.
 
-1. Create a Razorpay account and obtain API keys.
-2. Follow the official setup guide for React Native:
+1. Create a Razorpay account and obtain your API keys.
+2. Follow the official React Native integration guide:
    - <https://razorpay.com/docs/payments/payment-gateway/mobile-integration/react-native/>
-3. Add the required native configuration for Android and iOS (Gradle changes, URL schemes, etc.).
+3. Apply the required native configuration for:
+   - Android: Gradle changes, `AndroidManifest` setup, etc.
+   - iOS: Pod installation, URL types, etc.
 
 ### 5. Assets
 
-- The auth screen expects an app logo at:
-  - `android/assets/logo.png`
+The auth screen expects an app logo at:
 
-Ensure this file exists (or update the path in `src/screens/AuthScreen.js`).
+- `android/assets/logo.png`
+
+Either place your logo there or update the path in `src/screens/AuthScreen.js`.
 
 ---
 
@@ -172,7 +265,7 @@ yarn android
 
 ### Run on iOS (macOS only)
 
-First, install CocoaPods dependencies (only on first setup or after native dependency changes):
+Install CocoaPods dependencies (only on first setup or after native dependency changes):
 
 ```sh
 cd ios
@@ -243,7 +336,7 @@ Main stacks defined in `App.tsx`:
 
 - **Onboarding stack** (when not onboarded):
   - `Splash` → `Onboarding` → `CitySelect` → `Auth`
-- **Authenticated stack** (when onboarded and signed in):
+- **Authenticated stack** (onboarded and signed in):
   - `RestaurantSelect` → `Menu` → `Cart` → `OrderSummary` → `Orders` → `OrderTracking` → `Profile` → `LocationPicker`
 - **Unauthenticated + onboarded stack**:
   - `Auth` ↔ `CitySelect`
@@ -264,33 +357,64 @@ Equivalent `yarn` commands are supported.
 
 ---
 
-## Development & Code Quality
-
-- **Linting**: `npm run lint`
-- **Testing**: `npm test`
-- **Formatting**: Prettier is configured via `.prettierrc.js` (run via your editor or manually through `npx prettier` if desired).
-
-When adding new screens or services:
-
-- Keep shared styling in `src/theme.js`.
-- Use the existing navigation patterns in `App.tsx`.
-- Prefer going through `CartContext` helpers when manipulating cart state.
-
----
-
-## Firestore Data Model (High Level)
+## Firestore Data Model (Example)
 
 The code assumes at least these collections (you can adapt as needed):
 
-- `users` — documents keyed by `uid` containing basic profile and timestamps.
-- `menu` — collection used by `MenuScreen` to render items. Each document typically includes:
-  - `name`
-  - `description`
-  - `price`
-  - `category` (e.g. `Pizza`, `Burger`, `Sides`, `Beverage`)
-  - `imageUrl` (optional)
+- **`users`** — documents keyed by `uid` containing basic profile and timestamps.
+- **`menu`** — used by `MenuScreen` to render items.
 
-You can extend this to include restaurants, orders, etc., depending on your backend design.
+Example `menu` document:
+
+```json
+{
+  "name": "Margherita Pizza",
+  "description": "Classic cheese pizza with tomato sauce and basil.",
+  "price": 249,
+  "category": "Pizza",
+  "imageUrl": "https://example.com/pizzas/margherita.png"
+}
+```
+
+You can extend this with restaurant metadata, order collections, etc.
+
+---
+
+## Development & Code Quality
+
+- **Linting**:
+
+  ```sh
+  npm run lint
+  ```
+
+- **Testing**:
+
+  ```sh
+  npm test
+  ```
+
+- **Formatting**:
+  Prettier is configured via `.prettierrc.js` (you can use your editor integration or run `npx prettier`).
+
+When adding new screens or services:
+
+- Reuse colors and spacing from `src/theme.js`.
+- Follow existing navigation patterns in `App.tsx`.
+- Interact with the cart through `CartContext` instead of ad-hoc state.
+
+---
+
+## What I Built / Things to Highlight (for portfolio)
+
+You can adapt this section to your resume/portfolio:
+
+- Implemented a **multi-step onboarding/auth flow** driven by both Firebase Auth and persisted onboarding flags.
+- Built a **real-time menu experience** using Firestore snapshots, handling loading/error states gracefully.
+- Designed a **customizable cart system** where add-ons (crust, extra cheese, size, etc.) affect pricing and uniqueness of line items.
+- Integrated **Google Sign-In** and mapped Firebase users into an app-level `User` model.
+- Added **navigation guards** via stack selection based on `user` and `hasOnboarded`.
+- Prepared the app for **payment integration** via Razorpay.
 
 ---
 
@@ -304,15 +428,16 @@ You can extend this to include restaurants, orders, etc., depending on your back
   npx react-native start --reset-cache
   ```
 
-- For native build issues, open the respective native project in Android Studio or Xcode and check the build logs.
-- For authentication problems, double-check your Firebase configuration, SHA keys (Android), and reversed client IDs (iOS).
+- For native build issues, open the native project in **Android Studio** or **Xcode** and inspect the errors.
+- For authentication problems, double-check:
+  - Firebase configuration
+  - SHA keys (Android)
+  - Reversed client IDs / URL types (iOS)
 
-For more general React Native issues, see the official troubleshooting guide:
-
-<https://reactnative.dev/docs/troubleshooting>
+Official React Native troubleshooting guide: <https://reactnative.dev/docs/troubleshooting>
 
 ---
 
 ## License
 
-Specify your license here (e.g. MIT, proprietary).
+Specify your license here (e.g. MIT, Apache-2.0, or proprietary).
