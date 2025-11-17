@@ -19,6 +19,7 @@ import OrderTrackingScreen from './src/screens/OrderTrackingScreen';
 import SplashScreen from './src/screens/SplashScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import CitySelectionScreen from './src/screens/CitySelectionScreen';
+import LocationPickerScreen from './src/screens/LocationPickerScreen';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -32,6 +33,15 @@ export type RootStackParamList = {
   Orders: undefined;
   Profile: undefined;
   OrderTracking: { order: any } | undefined;
+  LocationPicker:
+    | {
+        onLocationPicked?: (loc: {
+          latitude: number;
+          longitude: number;
+          address: string;
+        }) => void;
+      }
+    | undefined;
 };
 
 export type User = {
@@ -211,7 +221,11 @@ function App() {
         user={user}
         onBack={() => navigation.goBack()}
         onViewOrders={() => navigation.navigate('Orders')}
-        onRequestLocationPick={undefined as any}
+        onRequestLocationPick={onPicked =>
+          navigation.navigate('LocationPicker', {
+            onLocationPicked: onPicked,
+          } as any)
+        }
       />
     );
   };
@@ -222,6 +236,22 @@ function App() {
       <OrderTrackingScreen
         order={order}
         onBack={() => navigation.goBack()}
+      />
+    );
+  };
+
+  const LocationPickerWrapper = ({ navigation, route }: any) => {
+    const onLocationPickedFromProfile = route?.params?.onLocationPicked;
+
+    return (
+      <LocationPickerScreen
+        onBack={() => navigation.goBack()}
+        onLocationPicked={loc => {
+          if (onLocationPickedFromProfile) {
+            onLocationPickedFromProfile(loc);
+          }
+          navigation.goBack();
+        }}
       />
     );
   };
@@ -270,6 +300,7 @@ function App() {
               <Stack.Screen name="Orders" component={OrdersWrapper} />
               <Stack.Screen name="Profile" component={ProfileWrapper} />
               <Stack.Screen name="OrderTracking" component={OrderTrackingWrapper} />
+              <Stack.Screen name="LocationPicker" component={LocationPickerWrapper} />
             </Stack.Navigator>
           ) : (
             <Stack.Navigator screenOptions={{ headerShown: false }}>

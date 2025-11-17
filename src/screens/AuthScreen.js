@@ -6,7 +6,7 @@ import auth from '@react-native-firebase/auth';
 import { firestore } from '../services/firebase';
 import { colors } from '../theme';
 
-const GOOGLE_LOGO = 'https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg';
+const GOOGLE_LOGO = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVZEZ6fa7bPwCI4HE5583rhd3qiFNmf6kiPg&s';
 
 const AuthScreen = ({ onSignIn }) => {
   const handleSignIn = async () => {
@@ -45,16 +45,18 @@ const AuthScreen = ({ onSignIn }) => {
       Alert.alert('Sign-in failed', 'Unable to sign in with Google. Please try again.');
     }
   };
+//add app logo here
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
+        <View style={styles.logoContainer}>
+          <Image source={require('/Users/deepansh/StudioProjects/order_plus_rn_new/android/assets/logo.png')} style={styles.appLogo} />
+        </View>
         <Text style={styles.logo}>Order Plus</Text>
       <Text style={styles.subtitle}>Sign in to continue</Text>
 
-      <Text style={styles.helperText}>
-        This demo uses a mocked Google account so you can focus on the ordering flow.
-      </Text>
+
 
       <TouchableOpacity style={styles.googleButton} onPress={handleSignIn}>
         <View style={styles.googleContent}>
@@ -65,13 +67,6 @@ const AuthScreen = ({ onSignIn }) => {
         </View>
       </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.skipButton}
-        onPress={() =>
-          onSignIn({ id: 'guest', name: 'Guest', email: 'guest@example.com' })
-        }>
-        <Text style={styles.skipText}>Skip for now</Text>
-      </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -88,6 +83,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 24,
     backgroundColor: colors.background,
+  },
+  logoContainer: {
+    marginBottom: 20,
+    width: 120,
+    height: 120,
+  },
+  appLogo: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
   },
   logo: {
     fontSize: 32,

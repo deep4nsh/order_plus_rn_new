@@ -10,28 +10,28 @@ const CITIES = [
     name: 'Delhi',
     subtitle: 'India Gate & Old Delhi flavours',
     image:
-      'https://images.pexels.com/photos/14018661/pexels-photo-14018661.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://amoghavarshaiaskas.in/wp-content/uploads/2024/10/Red-Fort-Complex.jpg',
   },
   {
     id: 'mumbai',
     name: 'Mumbai',
     subtitle: 'Gateway of India & sea breeze bites',
     image:
-      'https://images.pexels.com/photos/15543919/pexels-photo-15543919.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://miro.medium.com/v2/resize:fit:1400/1*DTXfmmagnoAxRcUEWdajMw.jpeg',
   },
   {
     id: 'jaipur',
     name: 'Jaipur',
     subtitle: 'Hawa Mahal & royal treats',
     image:
-      'https://images.pexels.com/photos/17967296/pexels-photo-17967296.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://res.cloudinary.com/ddjuftfy2/image/upload/f_webp,c_fill,q_auto/memphis/xlarge/1162399525_Hawa%20Mahal.jpg',
   },
   {
     id: 'bengaluru',
     name: 'Bengaluru',
     subtitle: 'Garden city snacks & coffee',
     image:
-      'https://images.pexels.com/photos/414660/pexels-photo-414660.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://yometro.com/images/places/bangalore-palace.jpg',
   },
 ];
 
