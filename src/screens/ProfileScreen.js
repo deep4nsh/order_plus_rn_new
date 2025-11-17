@@ -426,12 +426,6 @@ const ProfileScreen = ({ user, onBack, onViewOrders, onRequestLocationPick }) =>
               value={newAddressLine}
               onChangeText={setNewAddressLine}
             />
-            <SecondaryButton
-              title={locating ? 'Getting location...' : 'Use current location'}
-              onPress={handleUseCurrentLocation}
-              style={[styles.primaryButton, { marginBottom: 4 }]}
-              textStyle={styles.smallButtonText}
-            />
             <PrimaryButton
               title={savingAddress ? 'Saving...' : 'Save address'}
               onPress={handleSaveAddress}
