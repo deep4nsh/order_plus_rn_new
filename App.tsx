@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { StatusBar, useColorScheme, View, ActivityIndicator } from 'react-native';
+import { StatusBar, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { CartProvider } from './src/services/CartContext';
 import MenuScreen from './src/screens/MenuScreen';
@@ -15,8 +16,14 @@ import ProfileScreen from './src/screens/ProfileScreen';
 import AuthScreen from './src/screens/AuthScreen';
 import RestaurantSelectionScreen from './src/screens/RestaurantSelectionScreen';
 import OrderTrackingScreen from './src/screens/OrderTrackingScreen';
+import SplashScreen from './src/screens/SplashScreen';
+import OnboardingScreen from './src/screens/OnboardingScreen';
+import CitySelectionScreen from './src/screens/CitySelectionScreen';
 
 export type RootStackParamList = {
+  Splash: undefined;
+  Onboarding: undefined;
+  CitySelect: { mode?: 'onboarding' | 'edit' } | undefined;
   Auth: undefined;
   RestaurantSelect: undefined;
   Menu: { restaurant?: any } | undefined;
@@ -40,6 +47,8 @@ function App() {
   const isDarkMode = useColorScheme() === 'dark';
   const [user, setUser] = useState<User | null>(null);
   const [initializing, setInitializing] = useState(true);
+  const [hasOnboarded, setHasOnboarded] = useState<boolean | null>(null);
+  const [selectedCity, setSelectedCity] = useState<any | null>(null);
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -65,6 +74,28 @@ function App() {
     return unsubscribe;
   }, []);
 
+  useEffect(() => {
+    const loadOnboardingState = async () => {
+      try {
+        const storedFlag = await AsyncStorage.getItem('hasOnboarded');
+        const storedCity = await AsyncStorage.getItem('selectedCity');
+        setHasOnboarded(storedFlag === 'true');
+        if (storedCity) {
+          try {
+            setSelectedCity(JSON.parse(storedCity));
+          } catch {
+            setSelectedCity(null);
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to load onboarding state', e);
+        setHasOnboarded(false);
+      }
+    };
+
+    loadOnboardingState();
+  }, []);
+
   const handleSignedIn = (u: { id: string; name: string; email: string; avatarUrl?: string }) => {
     // Keep local state in sync immediately after AuthScreen login
     setUser({
@@ -83,13 +114,66 @@ function App() {
     return (
       <RestaurantSelectionScreen
         user={user}
+        city={selectedCity}
         onBack={undefined}
         onOpenProfile={() => navigation.navigate('Profile')}
+        onEditCity={() => navigation.navigate('CitySelect', { mode: 'edit' } as any)}
         onSelectRestaurant={(restaurant: any) => {
           navigation.navigate('Menu', { restaurant } as any);
         }}
       />
     );
+  };
+
+  const SplashWrapper = ({ navigation }: any) => {
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        navigation.replace('Onboarding');
+      }, 1500);
+      return () => clearTimeout(timer);
+    }, [navigation]);
+
+    return <SplashScreen />;
+  };
+
+  const OnboardingWrapper = ({ navigation }: any) => {
+    return (
+      <OnboardingScreen
+        onContinue={() => {
+          navigation.replace('CitySelect');
+        }}
+      />
+    );
+  };
+
+  const CitySelectWrapper = ({ navigation, route }: any) => {
+    const mode: 'onboarding' | 'edit' = route?.params?.mode ?? 'onboarding';
+
+    const handleCitySelected = async (city: any) => {
+      try {
+        await AsyncStorage.setItem('hasOnboarded', 'true');
+        await AsyncStorage.setItem('selectedCity', JSON.stringify(city));
+      } catch (e) {
+        console.warn('Failed to persist onboarding state', e);
+      }
+      setHasOnboarded(true);
+      setSelectedCity(city);
+
+      if (mode === 'onboarding') {
+        // After first-time city selection, go to auth if user isn't signed in yet,
+        // otherwise go straight to restaurant selection.
+        if (user) {
+          navigation.reset({ index: 0, routes: [{ name: 'RestaurantSelect' as any }] });
+        } else {
+          navigation.reset({ index: 0, routes: [{ name: 'Auth' as any }] });
+        }
+      } else {
+        // Edit mode: just go back to the previous screen (e.g. RestaurantSelect).
+        navigation.goBack();
+      }
+    };
+
+    return <CitySelectionScreen onSelectCity={handleCitySelected} />;
   };
 
   const CartWrapper = ({ navigation }: any) => {
@@ -146,14 +230,13 @@ function App() {
     return <AuthScreen onSignIn={handleSignedIn} />;
   };
 
-  if (initializing) {
+  // While we are loading Firebase auth or onboarding state, show the splash screen.
+  if (initializing || hasOnboarded === null) {
     return (
       <CartProvider>
         <SafeAreaProvider>
           <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <ActivityIndicator size="large" />
-          </View>
+          <SplashScreen />
         </SafeAreaProvider>
       </CartProvider>
     );
@@ -164,12 +247,23 @@ function App() {
       <SafeAreaProvider>
         <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
         <NavigationContainer>
-          {user ? (
+          {!hasOnboarded ? (
+            <Stack.Navigator
+              initialRouteName="Splash"
+              screenOptions={{ headerShown: false }}
+            >
+              <Stack.Screen name="Splash" component={SplashWrapper} />
+              <Stack.Screen name="Onboarding" component={OnboardingWrapper} />
+              <Stack.Screen name="CitySelect" component={CitySelectWrapper} />
+              <Stack.Screen name="Auth" component={AuthWrapper} />
+            </Stack.Navigator>
+          ) : user ? (
             <Stack.Navigator
               initialRouteName="RestaurantSelect"
               screenOptions={{ headerShown: false }}
             >
               <Stack.Screen name="RestaurantSelect" component={RestaurantSelectWrapper} />
+              <Stack.Screen name="CitySelect" component={CitySelectWrapper} />
               <Stack.Screen name="Menu" component={MenuWrapper} />
               <Stack.Screen name="Cart" component={CartWrapper} />
               <Stack.Screen name="OrderSummary" component={OrderSummaryWrapper} />
@@ -180,6 +274,7 @@ function App() {
           ) : (
             <Stack.Navigator screenOptions={{ headerShown: false }}>
               <Stack.Screen name="Auth" component={AuthWrapper} />
+              <Stack.Screen name="CitySelect" component={CitySelectWrapper} />
             </Stack.Navigator>
           )}
         </NavigationContainer>

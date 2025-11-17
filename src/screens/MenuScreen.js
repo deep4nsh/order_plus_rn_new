@@ -15,89 +15,6 @@ import { firestore } from '../services/firebase';
 import { useCart } from '../services/CartContext';
 import { colors } from '../theme';
 
-const DEFAULT_MENU_ITEMS = [
-  {
-    name: 'Margherita Pizza',
-    description: 'Classic cheese & tomato pizza with fresh basil.',
-    price: 299,
-    imageUrl:
-      'https://images.pexels.com/photos/4109084/pexels-photo-4109084.jpeg?auto=compress&cs=tinysrgb&w=800',
-    category: 'Pizza',
-    isAvailable: true,
-  },
-  {
-    name: 'Veggie Burger',
-    description: 'Grilled veggie patty with lettuce, tomato & cheese.',
-    price: 199,
-    imageUrl:
-      'https://images.pexels.com/photos/1639562/pexels-photo-1639562.jpeg?auto=compress&cs=tinysrgb&w=800',
-    category: 'Burger',
-    isAvailable: true,
-  },
-  {
-    name: 'French Fries',
-    description: 'Crispy golden fries with a side of ketchup.',
-    price: 99,
-    imageUrl:
-      'https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=800',
-    category: 'Sides',
-    isAvailable: true,
-  },
-  {
-    name: 'Cold Coffee',
-    description: 'Iced coffee with milk and a touch of sugar.',
-    price: 129,
-    imageUrl:
-      'https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg?auto=compress&cs=tinysrgb&w=800',
-    category: 'Beverage',
-    isAvailable: true,
-  },
-  {
-    name: 'Paneer Tikka',
-    description: 'Char-grilled cottage cheese with peppers & spices.',
-    price: 249,
-    imageUrl:
-      'https://images.pexels.com/photos/7259900/pexels-photo-7259900.jpeg?auto=compress&cs=tinysrgb&w=800',
-    category: 'Starters',
-    isAvailable: true,
-  },
-  {
-    name: 'White Sauce Pasta',
-    description: 'Creamy penne pasta tossed with herbs & veggies.',
-    price: 279,
-    imageUrl:
-      'https://images.pexels.com/photos/1437267/pexels-photo-1437267.jpeg?auto=compress&cs=tinysrgb&w=800',
-    category: 'Pasta',
-    isAvailable: true,
-  },
-  {
-    name: 'Grilled Sandwich',
-    description: 'Loaded veggie sandwich with cheese, grilled to perfection.',
-    price: 159,
-    imageUrl:
-      'https://images.pexels.com/photos/1600711/pexels-photo-1600711.jpeg?auto=compress&cs=tinysrgb&w=800',
-    category: 'Snacks',
-    isAvailable: true,
-  },
-  {
-    name: 'Chocolate Brownie',
-    description: 'Warm gooey brownie topped with chocolate sauce.',
-    price: 149,
-    imageUrl:
-      'https://images.pexels.com/photos/4109994/pexels-photo-4109994.jpeg?auto=compress&cs=tinysrgb&w=800',
-    category: 'Dessert',
-    isAvailable: true,
-  },
-  {
-    name: 'Fresh Lime Soda',
-    description: 'Refreshing lemon soda, sweet or salted.',
-    price: 79,
-    imageUrl:
-      'https://images.pexels.com/photos/96974/pexels-photo-96974.jpeg?auto=compress&cs=tinysrgb&w=800',
-    category: 'Beverage',
-    isAvailable: true,
-  },
-];
 
 const MenuScreen = ({ navigation, route, user }) => {
   const { addItemToCart, totalItems } = useCart();
@@ -297,26 +214,10 @@ const MenuScreen = ({ navigation, route, user }) => {
   useEffect(() => {
     let unsubscribeMenu;
 
-    const initMenu = async () => {
+    const initMenu = () => {
       try {
         setLoading(true);
         const menuRef = firestore().collection('menu');
-
-        // Ensure default data exists (idempotent: checks by name)
-        const snapshot = await menuRef.get();
-        const existingNames = new Set(
-          snapshot.docs.map(doc => String(doc.data().name || '').trim()),
-        );
-        if (snapshot.empty || snapshot.size < DEFAULT_MENU_ITEMS.length) {
-          await Promise.all(
-            DEFAULT_MENU_ITEMS.map(async item => {
-              const nameKey = String(item.name || '').trim();
-              if (!existingNames.has(nameKey)) {
-                await menuRef.add(item);
-              }
-            }),
-          );
-        }
 
         unsubscribeMenu = menuRef.onSnapshot(
           snap => {
@@ -434,14 +335,22 @@ const MenuScreen = ({ navigation, route, user }) => {
         </View>
 
         <FlatList
-        data={menuItems}
-        keyExtractor={item => item.id || item.name}
-        renderItem={renderItem}
-        numColumns={2}
-        columnWrapperStyle={styles.row}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-      />
+          data={menuItems}
+          keyExtractor={item => item.id || item.name}
+          renderItem={renderItem}
+          numColumns={2}
+          columnWrapperStyle={styles.row}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={() => (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyTitle}>No menu items available</Text>
+              <Text style={styles.emptySubtitle}>
+                Please add items to the "menu" collection in Firestore.
+              </Text>
+            </View>
+          )}
+        />
 
         <Modal
           visible={!!selectedItem}
@@ -737,6 +646,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
+  },
+  emptyState: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: 4,
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: colors.textMuted,
+    textAlign: 'center',
+    paddingHorizontal: 16,
   },
   loadingText: {
     marginTop: 8,
