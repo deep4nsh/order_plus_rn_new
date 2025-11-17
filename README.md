@@ -124,9 +124,8 @@ This project is ideal as a **portfolio piece** to demonstrate mobile app archite
 You can add screenshots here to make this project portfolio-ready:
 
 ```text
-docs/
-└── screenshots/
-    ├── splash.png
+screenshots/
+└── ├── splash.png
     ├── onboarding.png
     ├── city-select.png
     ├── auth.png
