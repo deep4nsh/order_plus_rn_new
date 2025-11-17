@@ -1,14 +1,154 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Order Plus (React Native)
 
-# Getting Started
+Order Plus is a React Native food ordering app inspired by modern delivery platforms. It includes onboarding, city selection, Google sign‑in with Firebase, a Firestore-driven menu, cart and checkout flows with rich item customization, order history and tracking, and basic profile/location management.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+This project was bootstrapped with `@react-native-community/cli` and targets both Android and iOS.
 
-## Step 1: Start Metro
+---
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## Features
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- **Onboarding & splash flow**
+  - Splash screen followed by an onboarding experience.
+  - Onboarding completion state is persisted in `AsyncStorage` (`hasOnboarded`).
+- **City selection & persistence**
+  - Dedicated city selection screen used during onboarding and later via profile.
+  - Selected city is stored and restored from `AsyncStorage` (`selectedCity`).
+- **Google sign‑in with Firebase Auth**
+  - Google login via `@react-native-google-signin/google-signin` and `@react-native-firebase/auth`.
+  - User profile (name, email, avatar) stored/updated in Firestore under `users/{uid}`.
+- **Firestore-backed menu**
+  - Menu items loaded in real time from Firestore `menu` collection.
+  - Live updates via Firestore snapshot listener.
+- **Cart & item customization**
+  - Central cart context (`CartContext`) with add, remove, adjust quantity, clear cart, and totals.
+  - Customization flows for:
+    - **Pizzas**: crust (classic/thin/cheese burst) and cheese level with price deltas.
+    - **Burgers**: optional extra patty.
+    - **Fries**: regular vs large.
+    - **Beverages**: regular vs large.
+- **Ordering flow**
+  - Menu → Cart → Order Summary → Orders list → Order tracking.
+  - Order tracking screen for following a placed order.
+- **Profile & location**
+  - Profile screen with user info.
+  - Location picker screen using maps/geolocation for address selection.
+- **Navigation & layout**
+  - Navigation powered by `@react-navigation/native` and `@react-navigation/native-stack`.
+  - `SafeAreaProvider` and themed UI via `src/theme.js`.
+- **Payments (Razorpay)**
+  - `react-native-razorpay` included for payment integration (requires native keys/config on your side).
+- **Testing & tooling**
+  - Jest test setup with `__tests__/App.test.tsx`.
+  - ESLint and Prettier configuration.
+
+---
+
+## Tech Stack
+
+- **Core**
+  - React Native `0.82.1`
+  - React `19.1.1`
+  - JavaScript + TypeScript (e.g. `App.tsx`)
+- **Navigation**
+  - `@react-navigation/native`
+  - `@react-navigation/native-stack`
+- **State & context**
+  - Custom `CartContext` for cart state
+- **Backend & auth**
+  - `@react-native-firebase/app`
+  - `@react-native-firebase/auth`
+  - `@react-native-firebase/firestore`
+- **Auth provider**
+  - `@react-native-google-signin/google-signin`
+- **Location & maps**
+  - `@react-native-community/geolocation`
+  - `react-native-maps`
+- **Payments**
+  - `react-native-razorpay`
+- **UI helpers**
+  - `react-native-safe-area-context`
+  - `react-native-screens`
+- **Tooling**
+  - Jest
+  - ESLint (`@react-native/eslint-config`)
+  - Prettier
+
+Node.js engine requirement: **Node >= 20** (see `package.json`).
+
+---
+
+## Getting Started
+
+### 1. Prerequisites
+
+Make sure your React Native environment is set up:
+
+- Node.js **>= 20**
+- Watchman (macOS, recommended)
+- Android Studio + Android SDK (for Android)
+- Xcode + Command Line Tools (for iOS, macOS only)
+- `npm` or `yarn`
+
+Follow the official guide if needed: <https://reactnative.dev/docs/set-up-your-environment>
+
+### 2. Clone and install
+
+From your terminal:
+
+```sh
+# clone the repo
+git clone <your-repo-url> order_plus_rn_new
+cd order_plus_rn_new
+
+# install dependencies (pick one)
+npm install
+# or
+yarn
+```
+
+### 3. Configure Firebase & Google Sign‑In
+
+This project uses Firebase Auth + Firestore and Google Sign‑In.
+
+1. **Create a Firebase project** and enable:
+   - Authentication → Google provider
+   - Firestore Database
+2. **Add Android & iOS apps** in Firebase console and download:
+   - `google-services.json` for Android
+   - `GoogleService-Info.plist` for iOS
+3. Place them in the appropriate native locations (standard React Native Firebase setup).
+4. In `App.tsx`, the Google Sign‑In is configured with a `webClientId` inside `GoogleSignin.configure(...)`.
+   - Replace the existing client ID with your own Web client ID from the Firebase console.
+
+For detailed platform configuration, see:
+
+- React Native Firebase docs: <https://rnfirebase.io/>
+- Google Sign‑In docs: <https://github.com/react-native-google-signin/google-signin>
+
+### 4. Configure Razorpay (optional but recommended)
+
+The dependency `react-native-razorpay` is included. To fully enable payments:
+
+1. Create a Razorpay account and obtain API keys.
+2. Follow the official setup guide for React Native:
+   - <https://razorpay.com/docs/payments/payment-gateway/mobile-integration/react-native/>
+3. Add the required native configuration for Android and iOS (Gradle changes, URL schemes, etc.).
+
+### 5. Assets
+
+- The auth screen expects an app logo at:
+  - `android/assets/logo.png`
+
+Ensure this file exists (or update the path in `src/screens/AuthScreen.js`).
+
+---
+
+## Running the App
+
+### Start Metro bundler
+
+From the project root:
 
 ```sh
 # Using npm
@@ -18,11 +158,9 @@ npm start
 yarn start
 ```
 
-## Step 2: Build and run your app
+### Run on Android
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
+In another terminal, with an emulator running or a device connected:
 
 ```sh
 # Using npm
@@ -32,23 +170,18 @@ npm run android
 yarn android
 ```
 
-### iOS
+### Run on iOS (macOS only)
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+First, install CocoaPods dependencies (only on first setup or after native dependency changes):
 
 ```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
+cd ios
+bundle install         # if using Bundler (recommended)
 bundle exec pod install
+cd ..
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+Then run:
 
 ```sh
 # Using npm
@@ -58,40 +191,128 @@ npm run ios
 yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+If everything is configured correctly, the app should launch in your Android emulator, iOS simulator, or on a physical device.
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+---
 
-## Step 3: Modify your app
+## Project Structure
 
-Now that you have successfully run the app, let's make changes!
+High-level layout (only key files/folders):
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+```text
+order_plus_rn_new/
+├── App.tsx                # Root component and navigation stacks
+├── index.js               # App registry entry point
+├── app.json               # App name/registration
+├── android/               # Android native project
+├── ios/                   # iOS native project
+├── src/
+│   ├── screens/
+│   │   ├── SplashScreen.js
+│   │   ├── OnboardingScreen.js
+│   │   ├── CitySelectionScreen.js
+│   │   ├── AuthScreen.js
+│   │   ├── RestaurantSelectionScreen.js
+│   │   ├── MenuScreen.js
+│   │   ├── CartScreen.js
+│   │   ├── OrderSummaryScreen.js
+│   │   ├── OrdersScreen.js
+│   │   ├── OrderTrackingScreen.js
+│   │   ├── ProfileScreen.js
+│   │   └── LocationPickerScreen.js
+│   ├── components/
+│   │   └── Buttons.js
+│   ├── services/
+│   │   ├── CartContext.js      # Cart state, totals, mutations
+│   │   └── firebase.js         # Firestore instance export
+│   └── theme.js                # Shared colors/theme
+├── __tests__/
+│   └── App.test.tsx            # Jest sample test
+├── package.json
+└── README.md
+```
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+### Navigation flow (simplified)
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+- Initial state depends on:
+  - Firebase auth state (`user`)
+  - Onboarding flag (`hasOnboarded` from AsyncStorage)
+- While loading those, a splash screen is shown.
 
-## Congratulations! :tada:
+Main stacks defined in `App.tsx`:
 
-You've successfully run and modified your React Native App. :partying_face:
+- **Onboarding stack** (when not onboarded):
+  - `Splash` → `Onboarding` → `CitySelect` → `Auth`
+- **Authenticated stack** (when onboarded and signed in):
+  - `RestaurantSelect` → `Menu` → `Cart` → `OrderSummary` → `Orders` → `OrderTracking` → `Profile` → `LocationPicker`
+- **Unauthenticated + onboarded stack**:
+  - `Auth` ↔ `CitySelect`
 
-### Now what?
+---
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+## Scripts
 
-# Troubleshooting
+Defined in `package.json`:
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+- `npm start` — Start Metro bundler
+- `npm run android` — Build and run on Android
+- `npm run ios` — Build and run on iOS
+- `npm test` — Run Jest test suite
+- `npm run lint` — Run ESLint across the project
 
-# Learn More
+Equivalent `yarn` commands are supported.
 
-To learn more about React Native, take a look at the following resources:
+---
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+## Development & Code Quality
+
+- **Linting**: `npm run lint`
+- **Testing**: `npm test`
+- **Formatting**: Prettier is configured via `.prettierrc.js` (run via your editor or manually through `npx prettier` if desired).
+
+When adding new screens or services:
+
+- Keep shared styling in `src/theme.js`.
+- Use the existing navigation patterns in `App.tsx`.
+- Prefer going through `CartContext` helpers when manipulating cart state.
+
+---
+
+## Firestore Data Model (High Level)
+
+The code assumes at least these collections (you can adapt as needed):
+
+- `users` — documents keyed by `uid` containing basic profile and timestamps.
+- `menu` — collection used by `MenuScreen` to render items. Each document typically includes:
+  - `name`
+  - `description`
+  - `price`
+  - `category` (e.g. `Pizza`, `Burger`, `Sides`, `Beverage`)
+  - `imageUrl` (optional)
+
+You can extend this to include restaurants, orders, etc., depending on your backend design.
+
+---
+
+## Troubleshooting
+
+- If Metro fails to start or connect, try clearing caches:
+
+  ```sh
+  rm -rf node_modules
+  npm install
+  npx react-native start --reset-cache
+  ```
+
+- For native build issues, open the respective native project in Android Studio or Xcode and check the build logs.
+- For authentication problems, double-check your Firebase configuration, SHA keys (Android), and reversed client IDs (iOS).
+
+For more general React Native issues, see the official troubleshooting guide:
+
+<https://reactnative.dev/docs/troubleshooting>
+
+---
+
+## License
+
+Specify your license here (e.g. MIT, proprietary).
